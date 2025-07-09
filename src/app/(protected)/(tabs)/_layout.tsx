@@ -54,7 +54,11 @@ import { useAuth } from '@clerk/clerk-expo'
                 name="create"
                 options={{
                     title: 'Create',
-                    tabBarIcon: ({ color }) => <AntDesign name="plus" size={24} color={color} />
+                    tabBarIcon: ({ color }) => <AntDesign name="plus" size={24} color={color} />,
+                    headerShown: false,
+                    tabBarStyle: {
+                        display: 'none'
+                    }
                 }}
 
             />
