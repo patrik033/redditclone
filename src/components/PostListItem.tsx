@@ -2,20 +2,26 @@ import { formatDistanceToNowStrict } from "date-fns/formatDistanceToNowStrict";
 import { Text, View, Image, StyleSheet, Pressable } from "react-native";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Post } from "../types";
-
+import { Link } from "expo-router";
 
 
 type PostListItemProps = {
-    post: Post;
-    isDetailedPost?: boolean;
+  post: Post;
+  isDetailedPost?: boolean;
 }
 
 
 const PostListItem = ({ post, isDetailedPost }: PostListItemProps) => {
 
-    return (
-        <View style={{ paddingHorizontal: 15, paddingVertical: 10, gap: 7, borderBottomColor: 'lightgrey', borderBottomWidth: 0.5, backgroundColor: 'white' }}>
-      {/* HEADER */}
+  const shouldShowImage = isDetailedPost || post.image;
+  const shouldShowDescription = isDetailedPost || !post.image;
+
+
+  return (
+    <Link href={`/post/${post.id}`} >
+
+      <View style={{ paddingHorizontal: 15, paddingVertical: 10, gap: 7, borderBottomColor: 'lightgrey', borderBottomWidth: 0.5, backgroundColor: 'white' }}>
+        {/* HEADER */}
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Image source={{ uri: post.group.image }} style={{ width: 20, height: 20, borderRadius: 10, marginRight: 5 }} />
           <View>
@@ -32,11 +38,11 @@ const PostListItem = ({ post, isDetailedPost }: PostListItemProps) => {
 
         {/* CONTENT */}
         <Text style={{ fontWeight: 'bold', fontSize: 17, letterSpacing: 0.5 }}>{post.title}</Text>
-        {post.image && (
+        {shouldShowImage && post.image && (
           <Image source={{ uri: post.image }} style={{ width: "100%", aspectRatio: 4 / 3, borderRadius: 15 }} />
         )}
 
-        {(post.description && !post.image) && (
+        {shouldShowDescription && post.description && (
           <Text numberOfLines={isDetailedPost ? undefined : 4}>
             {post.description}
           </Text>
@@ -62,39 +68,40 @@ const PostListItem = ({ post, isDetailedPost }: PostListItemProps) => {
           </View>
         </View>
       </View>
-    )
+    </Link>
+  )
 }
 
 export default PostListItem;
 
 const styles = StyleSheet.create({
-    iconBox: {
-        borderWidth: 0.5,
-        borderColor: '#D4D4D4',
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-        borderRadius: 20
-    },
-    image: {
-        height: 20,
-        aspectRatio: 1,
-        borderRadius: 10
-    },
-    description: {
-        fontSize: 14,
-        color: 'gray'
-    },
-    joinButtonText: {
-        backgroundColor: '#0d469b',
-        color: 'white',
-        paddingVertical: 2,
-        paddingHorizontal: 7,
-        borderRadius: 10,
-        fontWeight: 'bold'
-    },
-    title: {
-        fontSize: 17,
-        fontWeight: 'bold',
-        letterSpacing: 0.5
-    }
+  iconBox: {
+    borderWidth: 0.5,
+    borderColor: '#D4D4D4',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 20
+  },
+  image: {
+    height: 20,
+    aspectRatio: 1,
+    borderRadius: 10
+  },
+  description: {
+    fontSize: 14,
+    color: 'gray'
+  },
+  joinButtonText: {
+    backgroundColor: '#0d469b',
+    color: 'white',
+    paddingVertical: 2,
+    paddingHorizontal: 7,
+    borderRadius: 10,
+    fontWeight: 'bold'
+  },
+  title: {
+    fontSize: 17,
+    fontWeight: 'bold',
+    letterSpacing: 0.5
+  }
 })
