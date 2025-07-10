@@ -2,15 +2,18 @@ import { View, Text, Pressable, StyleSheet, TextInput, ScrollView, KeyboardAvoid
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AntDesign } from '@expo/vector-icons';
 import { router, Link } from "expo-router";
-import groups from '../../../../assets/data/groups.json'
+import { useAtom } from "jotai";
+import { selectedGroupAtom } from "../../../atoms";
 import { useState } from "react";
-import GroupSelector from "../post/groupSelector";
+
 
 const CreateScreen = () => {
 
 
+
     const [title, setTitle] = useState<string>('')
     const [bodyText, setBodyText] = useState<string>('')
+    const [group, setGroup] = useAtom(selectedGroupAtom)
 
 
 
@@ -18,7 +21,7 @@ const CreateScreen = () => {
     const goBack = () => {
         setTitle('')
         setBodyText('')
-
+        setGroup(null)
         router.back()
     }
 
@@ -43,8 +46,26 @@ const CreateScreen = () => {
 
                     <Link href={"/post/groupSelector"} asChild>
                         <Pressable style={styles.communityContainer}>
-                            <Text style={styles.rStyles}>r/</Text>
-                            <Text style={{ fontWeight: '600' }}>Select a Community</Text>
+                            {group ?
+                                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+                                    <Image source={{ uri: group.image }} style={{ width: 30, borderRadius: 15, aspectRatio: 1 }} />
+                                    <Text style={{ fontWeight: '600' }}>{group.name}</Text>
+                                </View>
+                                :
+                                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+                                    <View style={{
+                                        width: 30,
+                                        height: 30,
+                                        borderRadius: 15,
+                                        backgroundColor: 'black',
+                                        justifyContent: 'center',
+                                        alignItems: 'center'
+                                    }}>
+                                        <Text style={{ color: 'white', fontWeight: 'bold' }}>r/</Text>
+                                    </View>
+                                    <Text style={{ fontWeight: '600' }}>Select a Community</Text>
+                                </View>
+                            }
                         </Pressable>
                     </Link>
 

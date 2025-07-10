@@ -4,12 +4,22 @@ import { router } from "expo-router";
 import groups from '../../../../assets/data/groups.json'
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AntDesign } from "@expo/vector-icons";
+import { useSetAtom } from "jotai";
+import { selectedGroupAtom } from "../../../atoms";
+import { Group } from "../../../types";
 
 const groupSelector = () => {
 
     const [searchValue, setSearchValue] = useState<string>('')
+    const setSelectedGroup = useSetAtom(selectedGroupAtom)
     const filteredGroups = groups.filter((group) => group.name.toLowerCase().includes(searchValue.toLowerCase()))
 
+
+    const goBack = (group:Group) => {
+        setSearchValue('')
+        setSelectedGroup(group)
+        router.back()
+    }
 
     return (
         <SafeAreaView style={{ marginHorizontal: 10 }}>
@@ -40,7 +50,7 @@ const groupSelector = () => {
                     <Pressable
                 key={index}
                 style={{ padding: 15, borderBottomWidth: 1, borderBottomColor: '#eee',flex:1 }}
-                onPress={() => console.log(item)}>
+                onPress={() => goBack(item)}>
 
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                             <Image source={{ uri: item.image }} style={{ width: 40, borderRadius: 20, aspectRatio: 1 }} />
