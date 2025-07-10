@@ -1,42 +1,24 @@
-import { View, Text, Pressable, StyleSheet, TextInput, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
+import { View, Text, Pressable, StyleSheet, TextInput, ScrollView, KeyboardAvoidingView, Platform, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AntDesign } from '@expo/vector-icons';
-import { router } from "expo-router";
+import { router, Link } from "expo-router";
 import groups from '../../../../assets/data/groups.json'
 import { useState } from "react";
+import GroupSelector from "../post/groupSelector";
 
 const CreateScreen = () => {
-    const [selected, setSelected] = useState('')
-    const [showDropdown, setShowDropdown] = useState(false)
+
+
     const [title, setTitle] = useState<string>('')
     const [bodyText, setBodyText] = useState<string>('')
 
-    const renderCommunityDropdown = () => {
-        if (!showDropdown) return null;
 
-        return (
-            <ScrollView style={{ maxHeight: 200, borderWidth: 1, borderColor: '#ddd', borderRadius: 8, marginTop: 5 }}>
-                {groups.map((group, index) => (
-                    <Pressable
-                        key={index}
-                        style={{ padding: 15, borderBottomWidth: 1, borderBottomColor: '#eee' }}
-                        onPress={() => {
-                            setSelected(group.name);
-                            setShowDropdown(false);
-                        }}
-                    >
-                        <Text>r/{group.name}</Text>
-                    </Pressable>
-                ))}
-            </ScrollView>
-        );
-    };
-    
+
 
     const goBack = () => {
         setTitle('')
         setBodyText('')
-        setSelected('')
+
         router.back()
     }
 
@@ -48,7 +30,6 @@ const CreateScreen = () => {
         <SafeAreaView style={{ backgroundColor: 'white', flex: 1, paddingHorizontal: 10 }}>
             {/** Header */}
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-
                 <AntDesign name="close" size={30} color="black" onPress={() => goBack()} />
                 <Pressable onPress={() => router.back()} style={{ marginLeft: 'auto' }}>
                     <Text style={styles.postText}>Post</Text>
@@ -58,17 +39,16 @@ const CreateScreen = () => {
 
             {/** COMMUNITY SELECTOR */}
             <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
-                <ScrollView showsVerticalScrollIndicator={false} style={{ paddingVertical:15 }}>
+                <ScrollView showsVerticalScrollIndicator={false} style={{ paddingVertical: 15 }}>
 
-                    <View style={styles.communityContainer}>
-                        <Pressable style={{ flexDirection: 'row', gap: 3 }} onPress={() => setShowDropdown(!showDropdown)}>
+                    <Link href={"/post/groupSelector"} asChild>
+                        <Pressable style={styles.communityContainer}>
                             <Text style={styles.rStyles}>r/</Text>
-                            <Text style={{ fontWeight: '600' }}>{selected.length > 0 ? selected : 'Select a Community'}</Text>
-                            <AntDesign name="down" size={20} color="black" />
+                            <Text style={{ fontWeight: '600' }}>Select a Community</Text>
                         </Pressable>
-                    </View>
+                    </Link>
 
-                    {renderCommunityDropdown()}
+
 
                     {/** INPUTS */}
                     <TextInput

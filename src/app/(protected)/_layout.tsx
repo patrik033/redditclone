@@ -16,6 +16,11 @@ const AppLayout = () => {
         <Stack.Screen name="(tabs)" options={{ 
             headerShown: false
          }} />
+
+         <Stack.Screen name="post/groupSelector" options={{ 
+            headerShown: false
+         }} />
+
         <Stack.Screen name="post/[id]" options={{ 
             headerStyle: {
                 backgroundColor: '#FF5700'
