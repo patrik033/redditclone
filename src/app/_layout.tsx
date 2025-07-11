@@ -1,20 +1,30 @@
 import { Slot } from "expo-router";
-import { ClerkProvider,ClerkLoaded } from "@clerk/clerk-expo";
+import { ClerkProvider, ClerkLoaded } from "@clerk/clerk-expo";
 import { tokenCache } from '@clerk/clerk-expo/token-cache'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { useReactQueryDevTools } from '@dev-plugins/react-query'
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
+const queryClient = new QueryClient();
 
-if (!publishableKey) {
-    throw new Error("Missing Publishable Key");
-}
 
 const RootLayout = () => {
+    
+    if (!publishableKey) {
+        throw new Error("Missing Publishable Key");
+    }
+    
+    useReactQueryDevTools(queryClient);
+
+
     return (
-        <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
+        <QueryClientProvider client={queryClient}>
+            <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
 
                 <Slot />
-  
-        </ClerkProvider>
+
+            </ClerkProvider>
+        </QueryClientProvider>
     )
 }
 
