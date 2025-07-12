@@ -1,13 +1,19 @@
 import { formatDistanceToNowStrict } from "date-fns/formatDistanceToNowStrict";
 import { Text, View, Image, StyleSheet, Pressable } from "react-native";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { Post } from "../types";
+
 import { Link } from "expo-router";
+import { Tables } from "../types/database.types";
 
 
 type PostListItemProps = {
   post: Post;
   isDetailedPost?: boolean;
+}
+
+type Post = Tables<'posts'> & {
+  user: Tables<'users'>;
+  group: Tables<'groups'>;
 }
 
 
@@ -18,9 +24,9 @@ const PostListItem = ({ post, isDetailedPost }: PostListItemProps) => {
 
 
   return (
-    <Link href={`/post/${post.id}`} >
+    <Link href={`/post/${post.id}`} asChild>
 
-      <View style={{ paddingHorizontal: 15, paddingVertical: 10, gap: 7, borderBottomColor: 'lightgrey', borderBottomWidth: 0.5, backgroundColor: 'white' }}>
+      <Pressable style={{ paddingHorizontal: 15, paddingVertical: 10, gap: 7, borderBottomColor: 'lightgrey', borderBottomWidth: 0.5, backgroundColor: 'white' }}>
         {/* HEADER */}
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Image source={{ uri: post.group.image }} style={{ width: 20, height: 20, borderRadius: 10, marginRight: 5 }} />
@@ -67,7 +73,7 @@ const PostListItem = ({ post, isDetailedPost }: PostListItemProps) => {
             <MaterialCommunityIcons name="share-outline" size={19} color="black" style={styles.iconBox} />
           </View>
         </View>
-      </View>
+      </Pressable>
     </Link>
   )
 }

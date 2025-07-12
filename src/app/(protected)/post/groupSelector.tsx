@@ -1,25 +1,47 @@
 import { useState } from "react";
-import { View, Text, Pressable, Image, TextInput, FlatList, KeyboardAvoidingView, Platform } from "react-native";
+import { View, Text, Pressable, Image, TextInput, FlatList, KeyboardAvoidingView, Platform, ActivityIndicator } from "react-native";
 import { router } from "expo-router";
-import groups from '../../../../assets/data/groups.json'
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AntDesign } from "@expo/vector-icons";
 import { useSetAtom } from "jotai";
 import { selectedGroupAtom } from "../../../atoms";
-import { Group } from "../../../types";
+import { useQuery } from "@tanstack/react-query";
+import { fetchGroups } from "../../../services/groupService";
+import { Tables } from "../../../types/database.types";
+
+type Group = Tables<'groups'>
+
 
 const groupSelector = () => {
 
     const [searchValue, setSearchValue] = useState<string>('')
     const setSelectedGroup = useSetAtom(selectedGroupAtom)
-    const filteredGroups = groups.filter((group) => group.name.toLowerCase().includes(searchValue.toLowerCase()))
 
 
-    const goBack = (group:Group) => {
+    const { data, isLoading, error } = useQuery({
+        queryKey: ['groups',{searchValue}],
+        queryFn: () => fetchGroups(searchValue),    
+        staleTime: 5000,
+        placeholderData: (previousData) => previousData,
+    })
+
+
+
+    const goBack = (group: Group) => {
         setSearchValue('')
         setSelectedGroup(group)
         router.back()
     }
+
+    if (isLoading) {
+        return <ActivityIndicator />
+    }
+
+    if (error || !data) {
+        return <Text>Error</Text>
+    }
+
+
 
     return (
         <SafeAreaView style={{ marginHorizontal: 10 }}>
@@ -44,23 +66,23 @@ const groupSelector = () => {
 
             <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} >
 
-            <FlatList
-                data={filteredGroups}
-                renderItem={({ item, index }) =>
-                    <Pressable
-                key={index}
-                style={{ padding: 15, borderBottomWidth: 1, borderBottomColor: '#eee',flex:1 }}
-                onPress={() => goBack(item)}>
+                <FlatList
+                    data={data}
+                    renderItem={({ item, index }) =>
+                        <Pressable
+                            key={index}
+                            style={{ padding: 15, borderBottomWidth: 1, borderBottomColor: '#eee', flex: 1 }}
+                            onPress={() => goBack(item)}>
 
-                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-                            <Image source={{ uri: item.image }} style={{ width: 40, borderRadius: 20, aspectRatio: 1 }} />
-                            <Text style={{ fontSize: 16, fontWeight: '600' }}>{item.name}</Text>
-                        </View>
-                    </Pressable>
-                }
-                keyExtractor={(item) => item.id}
+                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                                <Image source={{ uri: item.image }} style={{ width: 40, borderRadius: 20, aspectRatio: 1 }} />
+                                <Text style={{ fontSize: 16, fontWeight: '600' }}>{item.name}</Text>
+                            </View>
+                        </Pressable>
+                    }
+                    keyExtractor={(item) => item.id}
                 />
-                </KeyboardAvoidingView>
+            </KeyboardAvoidingView>
 
 
 
