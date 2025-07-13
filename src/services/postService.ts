@@ -31,3 +31,19 @@ export const fetchPostById = async (id: string, supabase: SupabaseClient<Databas
         return data;
     }
 }
+
+export const deletePostById = async (id: string, supabase: SupabaseClient<Database>) => {
+    const { data,error } = await supabase
+        .from('posts')
+        .delete()
+        .eq('id', id)
+        .select()
+        .single();
+
+    if (error) {
+        throw error;
+    }
+    else {
+        return data;
+    }
+}
