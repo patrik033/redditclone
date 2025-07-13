@@ -6,14 +6,15 @@ import { useAtom } from "jotai";
 import { selectedGroupAtom } from "../../../atoms";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "../../../lib/supabase";
-import { TablesInsert } from "../../../types/database.types";
+import { useSupabase } from "../../../lib/supabase";
+import { Database, TablesInsert } from "../../../types/database.types";
+import { SupabaseClient } from "@supabase/supabase-js";
 
 
 const CreateScreen = () => {
 
-
-    const insertPost = async (post: InsertPost) => {
+    const supabase = useSupabase();
+    const insertPost = async (post: InsertPost, supabase: SupabaseClient<Database>) => {
         const { data, error } = await supabase
             .from("posts")
             .insert(post)
@@ -48,8 +49,7 @@ const CreateScreen = () => {
                     title,
                     description: bodyText,
                     group_id: group?.id,
-                    user_id: "7a86aa48-b828-4584-94f9-8e2b2f4426c4",
-                });
+                }, supabase);
         },
         onSuccess: (data) => {
             console.log(data)

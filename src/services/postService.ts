@@ -1,9 +1,11 @@
-import { supabase } from "../lib/supabase";
+import { SupabaseClient } from "@supabase/supabase-js";
+import { useSupabase } from "../lib/supabase";
+import { Database } from "../types/database.types";
 
-export const fetchPosts = async () => {
+export const fetchPosts = async (supabase: SupabaseClient<Database>) => {
     const { data, error } = await supabase
         .from('posts')
-        .select('*, group:groups(*),user:users!posts_user_id_fkey(*)')
+        .select('*, group:groups(*)')
         .order('created_at', { ascending: false });
 
     if (error) {
@@ -15,10 +17,10 @@ export const fetchPosts = async () => {
 }
 
 
-export const fetchPostById = async (id: string) => {
+export const fetchPostById = async (id: string, supabase: SupabaseClient<Database>) => {
     const { data, error } = await supabase
         .from('posts')
-        .select('*, group:groups(*),user:users!posts_user_id_fkey(*)')
+        .select('*, group:groups(*)')
         .eq('id', id)
         .single();
 

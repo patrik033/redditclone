@@ -1,6 +1,8 @@
-import { supabase } from "../lib/supabase";
+import { SupabaseClient } from "@supabase/supabase-js";
 
-export const fetchGroups = async (search:string) => {
+import { Database } from "../types/database.types";
+
+export const fetchGroups = async (search:string, supabase: SupabaseClient<Database>) => {
     const { data, error } = await supabase
         .from('groups')
         .select('*')

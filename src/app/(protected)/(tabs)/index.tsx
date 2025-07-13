@@ -6,6 +6,7 @@ import PostListItem from "../../../components/PostListItem";
 import { Tables } from "../../../types/database.types";
 import { useQuery } from "@tanstack/react-query";
 import { fetchPosts } from "../../../services/postService";
+import { useSupabase } from "../../../lib/supabase";
 
 type Post = Tables<'posts'> & {
     user: Tables<'users'>;
@@ -13,7 +14,7 @@ type Post = Tables<'posts'> & {
 }
 
 const HomeScreen = () => {
-
+    const supabase = useSupabase();
 
     const { 
         data: posts, 
@@ -23,7 +24,7 @@ const HomeScreen = () => {
         isRefetching,
     } = useQuery({
         queryKey: ['posts'],
-        queryFn: () => fetchPosts(),
+        queryFn: () => fetchPosts(supabase),
         staleTime: 10_000,
     });
 

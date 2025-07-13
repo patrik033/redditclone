@@ -4,15 +4,15 @@ import PostListItem from "../../../components/PostListItem";
 
 import { fetchPostById } from "../../../services/postService";
 import { useQuery } from "@tanstack/react-query";
-
+import { useSupabase } from "../../../lib/supabase";
 
 
 const DetailedPost = () => {
     const { id } = useLocalSearchParams<{id: string}>()
-
+    const supabase = useSupabase();
     const {data: post, isLoading, error} = useQuery({
         queryKey: ['post', id],
-        queryFn: () => fetchPostById(id),
+        queryFn: () => fetchPostById(id, supabase),
         staleTime: 5000,
     })
 

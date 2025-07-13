@@ -12,7 +12,7 @@ type PostListItemProps = {
 }
 
 type Post = Tables<'posts'> & {
-  user: Tables<'users'>;
+  //user: Tables<'users'>;
   group: Tables<'groups'>;
 }
 
@@ -35,7 +35,7 @@ const PostListItem = ({ post, isDetailedPost }: PostListItemProps) => {
               <Text style={{ fontWeight: 'bold', fontSize: 13, color: '#3A3B3C' }}>{post.group.name}</Text>
               <Text style={{ color: 'grey', fontSize: 13, alignSelf: 'flex-start' }}>{formatDistanceToNowStrict(new Date(post.created_at))}</Text>
             </View>
-            {isDetailedPost && <Text style={{ fontSize: 13, color: '#2E5DAA' }}>{post.user.name}</Text>}
+            {isDetailedPost && <Text style={{ fontSize: 13, color: '#2E5DAA' }}>{post.user?.name}</Text>}
           </View>
           <Pressable onPress={() => console.error('Pressed')} style={{ marginLeft: 'auto', backgroundColor: '#0d469b', borderRadius: 10 }}>
             <Text style={{ color: 'white', paddingVertical: 2, paddingHorizontal: 7, fontWeight: 'bold', fontSize: 13 }}>Join</Text>
