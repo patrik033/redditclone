@@ -52,7 +52,7 @@ const CreateScreen = () => {
                 }, supabase);
         },
         onSuccess: (data) => {
-            console.log(data)
+            //console.log(data)
             goBack()
 
             //invalidate posts query
@@ -60,7 +60,7 @@ const CreateScreen = () => {
 
         },
         onError: (error) => {
-            console.log(error)
+            //console.log(error)
             Alert.alert('Failed to insert',error.message)
         }
     });

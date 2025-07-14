@@ -24,7 +24,7 @@ export const fetchPostById = async (id: string, supabase: SupabaseClient<Databas
         .eq('id', id)
         .single();
 
-    console.log(JSON.stringify(data, null, 2));
+
     if (error) {
         throw error;
     }
@@ -33,22 +33,7 @@ export const fetchPostById = async (id: string, supabase: SupabaseClient<Databas
     }
 }
 
-//export const fetchPostUpvotes = async (id: string, supabase: SupabaseClient<Database>) => {
-//    const { data, error } = await supabase
-//        .from('upvotes')
-//        .select('value')
-//        .eq('post_id', id)
-//        .single();
 
-//    console.log(JSON.stringify(data, null, 2));
-
- //   if (error) {
-  //      throw error;
-  //  }
-  //  else {
-  //      return data;
-  //  }
-//}
 
 export const deletePostById = async (id: string, supabase: SupabaseClient<Database>) => {
     const { data,error } = await supabase
