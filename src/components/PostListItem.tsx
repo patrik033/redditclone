@@ -58,7 +58,7 @@ const PostListItem = ({ post, isDetailedPost }: PostListItemProps) => {
       <Pressable style={{ paddingHorizontal: 15, paddingVertical: 10, gap: 7, borderBottomColor: 'lightgrey', borderBottomWidth: 0.5, backgroundColor: 'white' }}>
         {/* HEADER */}
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Image source={{ uri: post.group.image }} style={{ width: 20, height: 20, borderRadius: 10, marginRight: 5 }} />
+          <Image source={{ uri: post.group.image || 'https://notjustdev-dummy.s3.us-east-2.amazonaws.com/avatars/11.png' }} style={{ width: 20, height: 20, borderRadius: 10, marginRight: 5 }} />
           <View>
             <View style={{ flexDirection: 'row', gap: 5 }}>
               <Text style={{ fontWeight: 'bold', fontSize: 13, color: '#3A3B3C' }}>{post.group.name}</Text>

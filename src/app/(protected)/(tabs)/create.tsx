@@ -96,7 +96,7 @@ const CreateScreen = () => {
                         <Pressable style={styles.communityContainer}>
                             {group ?
                                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-                                    <Image source={{ uri: group.image }} style={{ width: 30, borderRadius: 15, aspectRatio: 1 }} />
+                                    <Image source={{ uri: group.image || 'https://notjustdev-dummy.s3.us-east-2.amazonaws.com/avatars/11.png' }} style={{ width: 30, borderRadius: 15, aspectRatio: 1 }} />
                                     <Text style={{ fontWeight: '600' }}>{group.name}</Text>
                                 </View>
                                 :
