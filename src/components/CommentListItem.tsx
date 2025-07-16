@@ -1,8 +1,8 @@
 import { View, Text, Image, Pressable, FlatList } from "react-native";
 import { Entypo, Octicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { formatDistanceToNowStrict } from 'date-fns';
+import { formatDistanceToNowStrict, isSameHour } from 'date-fns';
 import { Comment } from "../types";
-import { useState } from "react";
+import { useState, memo } from "react";
 
 type CommentListItemProps = {
   comment: Comment;
@@ -10,10 +10,11 @@ type CommentListItemProps = {
   onReply: (commentId: string) => void;
 }
 
-const CommentListItem = ({ comment,depth,onReply }: CommentListItemProps) => {
+
+console.log("CommentListItem rendered")
+const CommentListItem = ({ comment, depth, onReply }: CommentListItemProps) => {
 
   const [isShowReplies, setIsShowReplies] = useState<boolean>(false);
- 
 
 
   return (
@@ -58,8 +59,8 @@ const CommentListItem = ({ comment,depth,onReply }: CommentListItemProps) => {
         </View>
       </View>
 
-{/* Show Replies */}
-      {(!!comment.replies.length   && !isShowReplies && depth < 5) && (
+      {/* Show Replies */}
+      {(!!comment.replies.length && !isShowReplies && depth < 5) && (
 
         <Pressable style={{ backgroundColor: "#EDEDED", borderRadius: 2, paddingVertical: 3, alignItems: "center", gap: 5 }} onPress={() => setIsShowReplies(true)}>
           <Text style={{ color: "#737373", fontSize: 12, letterSpacing: 0.5, fontWeight: "500", alignSelf: "center" }}>Show Replies</Text>
@@ -68,17 +69,34 @@ const CommentListItem = ({ comment,depth,onReply }: CommentListItemProps) => {
       )}
 
       {/* Replies */}
+      {/*isShowReplies && (
+        //<FlatList
+          //data={comment.replies}
+          //renderItem={({ item }) => (
+            //<CommentListItem
+              //comment={item}
+              //depth={depth + 1}
+              //onReply={onReply}
+            ///>
+          //)}
+          //keyExtractor={(item) => item.id.toString()}
+          //contentContainerStyle={{ paddingLeft: 20 }}
+        ///>
+      //)}*/}
+
       {isShowReplies && (
-        <FlatList
-          data={comment.replies}
-          renderItem={({ item }) => <CommentListItem comment={item} depth={depth + 1} onReply={onReply} />}
-          keyExtractor={(item) => item.id.toString()}
-          contentContainerStyle={{ paddingLeft: 20 }}
-        />
+        comment.replies.map((reply) => (
+          <CommentListItem
+            key={reply.id}
+            comment={reply}
+            depth={depth + 1}
+            onReply={onReply}
+          />
+        ))
       )}
     </View>
 
   )
 };
 
-export default CommentListItem;
+export default memo(CommentListItem);

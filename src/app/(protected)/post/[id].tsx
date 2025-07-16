@@ -1,4 +1,4 @@
-import { useState,useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 
 import { View, Text, ActivityIndicator, Alert, FlatList, TextInput, SafeAreaView, KeyboardAvoidingView, Platform, Pressable } from "react-native"
 import { router, Stack, useLocalSearchParams } from "expo-router"
@@ -19,8 +19,8 @@ const DetailedPost = () => {
     const supabase = useSupabase();
     const queryClient = useQueryClient();
     const insets = useSafeAreaInsets();
-    
-    
+
+
     const [comment, setComment] = useState<string>('');
     const [isInputFocused, setIsInputFocused] = useState<boolean>(false);
     const inputRef = useRef<TextInput | null>(null);
@@ -51,12 +51,16 @@ const DetailedPost = () => {
     const postComments = comments.filter((c) => c.post_id === "post-1");
 
 
-    const handleReplyButtonPressed = (commentId: string) =>{
+
+
+
+
+    const handleReplyButtonPressed = useCallback((commentId: string) => {
+   
         inputRef.current?.focus();
-        //setIsInputFocused(true);
         //setComment(`@${commentId} `);
-        console.log("Reply button pressed",commentId);
-    }
+        console.log("Reply button pressed", comment);
+    },[])
 
     if (isLoading) {
         return <ActivityIndicator />
