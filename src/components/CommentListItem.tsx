@@ -3,6 +3,9 @@ import { Entypo, Octicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { formatDistanceToNowStrict, isSameHour } from 'date-fns';
 import { Comment } from "../types";
 import { useState, memo } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { fetchCommentReplies, fetchComments } from "../services/postService";
+import { useSupabase } from "../lib/supabase";
 
 type CommentListItemProps = {
   comment: Comment;
@@ -11,11 +14,15 @@ type CommentListItemProps = {
 }
 
 
-console.log("CommentListItem rendered")
-const CommentListItem = ({ comment, depth, onReply }: CommentListItemProps) => {
 
+const CommentListItem = ({ comment, depth, onReply }: CommentListItemProps) => {
   const [isShowReplies, setIsShowReplies] = useState<boolean>(false);
 
+  const supabase = useSupabase();
+  const { data: comments, isLoading: commentsLoading, error: commentsError } = useQuery({
+    queryKey: ['comments', { parentId: comment.id }],
+    queryFn: () => fetchCommentReplies(comment.id, supabase),
+  })
 
   return (
     <View
@@ -30,7 +37,7 @@ const CommentListItem = ({ comment, depth, onReply }: CommentListItemProps) => {
       }}
     >
       {/* User Info */}
-      <View style={{ flexDirection: "row", alignItems: "center", gap: 3 }}>
+      {/*<View style={{ flexDirection: "row", alignItems: "center", gap: 3 }}>
         <Image
           source={{
             uri: comment.user.image || "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/avatars/3.jpg",
@@ -42,7 +49,7 @@ const CommentListItem = ({ comment, depth, onReply }: CommentListItemProps) => {
         <Text style={{ color: "#737373", fontSize: 13 }}>
           {formatDistanceToNowStrict(new Date(comment.created_at))}
         </Text>
-      </View>
+      </View>*/}
 
       {/* Comment Content */}
       <Text>{comment.comment}</Text>
@@ -60,7 +67,7 @@ const CommentListItem = ({ comment, depth, onReply }: CommentListItemProps) => {
       </View>
 
       {/* Show Replies */}
-      {(!!comment.replies.length && !isShowReplies && depth < 5) && (
+      {(!!comments?.length && !isShowReplies && depth < 5) && (
 
         <Pressable style={{ backgroundColor: "#EDEDED", borderRadius: 2, paddingVertical: 3, alignItems: "center", gap: 5 }} onPress={() => setIsShowReplies(true)}>
           <Text style={{ color: "#737373", fontSize: 12, letterSpacing: 0.5, fontWeight: "500", alignSelf: "center" }}>Show Replies</Text>
@@ -84,8 +91,8 @@ const CommentListItem = ({ comment, depth, onReply }: CommentListItemProps) => {
         ///>
       //)}*/}
 
-      {isShowReplies && (
-        comment.replies.map((reply) => (
+      {isShowReplies && comments && (
+        comments.map((reply) => (
           <CommentListItem
             key={reply.id}
             comment={reply}

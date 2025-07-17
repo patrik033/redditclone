@@ -4,7 +4,7 @@ import { View, Text, ActivityIndicator, Alert, FlatList, TextInput, SafeAreaView
 import { router, Stack, useLocalSearchParams } from "expo-router"
 import PostListItem from "../../../components/PostListItem";
 
-import { deletePostById, fetchPostById } from "../../../services/postService";
+import { deletePostById, fetchComments, fetchPostById } from "../../../services/postService";
 import { useSupabase } from "../../../lib/supabase";
 import { AntDesign, MaterialIcons, Entypo } from '@expo/vector-icons';
 
@@ -27,10 +27,17 @@ const DetailedPost = () => {
 
 
     const { data: post, isLoading, error } = useQuery({
-        queryKey: ['post', id],
+        queryKey: ['post', {postId: id}],
         queryFn: () => fetchPostById(id, supabase),
-        staleTime: 5000,
+        //staleTime: 5000,
     })
+
+    const { data: comments, isLoading: commentsLoading, error: commentsError } = useQuery({
+        queryKey: ['comments', id],
+        queryFn: () => fetchComments(id, supabase),
+    })
+
+    console.log("post", JSON.stringify(comments, null, 2));
 
     const { mutate: remove } = useMutation({
 
@@ -48,7 +55,7 @@ const DetailedPost = () => {
 
 
     const searchedPost = posts.find(p => p.id === id);
-    const postComments = comments.filter((c) => c.post_id === "post-1");
+
 
 
 
@@ -57,9 +64,9 @@ const DetailedPost = () => {
 
     const handleReplyButtonPressed = useCallback((commentId: string) => {
    
-        inputRef.current?.focus();
+       // console.log("Reply button pressed", comment);
+      inputRef.current?.focus();
         //setComment(`@${commentId} `);
-        console.log("Reply button pressed", comment);
     },[])
 
     if (isLoading) {
@@ -92,7 +99,7 @@ const DetailedPost = () => {
             <View style={{ flex: 1 }}>
 
                 <FlatList
-                    data={postComments}
+                    data={comments}
                     renderItem={({ item }) => <CommentListItem comment={item} depth={0} onReply={handleReplyButtonPressed} />}
                     ListHeaderComponent={<PostListItem post={post} isDetailedPost />}
                 />
