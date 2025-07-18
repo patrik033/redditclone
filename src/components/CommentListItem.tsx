@@ -1,11 +1,15 @@
 import { View, Text, Image, Pressable, FlatList } from "react-native";
 import { Entypo, Octicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { formatDistanceToNowStrict, isSameHour } from 'date-fns';
-import { Comment } from "../types";
 import { useState, memo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchCommentReplies, fetchComments } from "../services/postService";
+import { fetchCommentReplies } from "../services/commentService";
 import { useSupabase } from "../lib/supabase";
+import { Tables } from "../types/database.types";
+
+
+
+type Comment = Tables<'comments'>
 
 type CommentListItemProps = {
   comment: Comment;
@@ -19,7 +23,7 @@ const CommentListItem = ({ comment, depth, onReply }: CommentListItemProps) => {
   const [isShowReplies, setIsShowReplies] = useState<boolean>(false);
 
   const supabase = useSupabase();
-  const { data: comments, isLoading: commentsLoading, error: commentsError } = useQuery({
+  const { data: replies, isLoading: commentsLoading, error: commentsError } = useQuery({
     queryKey: ['comments', { parentId: comment.id }],
     queryFn: () => fetchCommentReplies(comment.id, supabase),
   })
@@ -67,7 +71,7 @@ const CommentListItem = ({ comment, depth, onReply }: CommentListItemProps) => {
       </View>
 
       {/* Show Replies */}
-      {(!!comments?.length && !isShowReplies && depth < 5) && (
+      {(!!replies?.length && !isShowReplies && depth < 5) && (
 
         <Pressable style={{ backgroundColor: "#EDEDED", borderRadius: 2, paddingVertical: 3, alignItems: "center", gap: 5 }} onPress={() => setIsShowReplies(true)}>
           <Text style={{ color: "#737373", fontSize: 12, letterSpacing: 0.5, fontWeight: "500", alignSelf: "center" }}>Show Replies</Text>
@@ -91,8 +95,8 @@ const CommentListItem = ({ comment, depth, onReply }: CommentListItemProps) => {
         ///>
       //)}*/}
 
-      {isShowReplies && comments && (
-        comments.map((reply) => (
+      {isShowReplies && replies && (
+        replies.map((reply) => (
           <CommentListItem
             key={reply.id}
             comment={reply}

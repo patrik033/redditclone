@@ -4,12 +4,12 @@ import { View, Text, ActivityIndicator, Alert, FlatList, TextInput, SafeAreaView
 import { router, Stack, useLocalSearchParams } from "expo-router"
 import PostListItem from "../../../components/PostListItem";
 
-import { deletePostById, fetchComments, fetchPostById } from "../../../services/postService";
+import { deletePostById, fetchPostById } from "../../../services/postService";
+import { fetchComments, insertComment } from "../../../services/commentService";
 import { useSupabase } from "../../../lib/supabase";
 import { AntDesign, MaterialIcons, Entypo } from '@expo/vector-icons';
 
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
-import comments from "../../../../assets/data/comments.json"
 import posts from "../../../../assets/data/posts.json"
 import CommentListItem from "../../../components/CommentListItem"
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -24,16 +24,16 @@ const DetailedPost = () => {
     const [comment, setComment] = useState<string>('');
     const [isInputFocused, setIsInputFocused] = useState<boolean>(false);
     const inputRef = useRef<TextInput | null>(null);
-
+    const [replayToId, setReplayToId] = useState<string | null>(null);
 
     const { data: post, isLoading, error } = useQuery({
-        queryKey: ['post', {postId: id}],
+        queryKey: ['post', { postId: id }],
         queryFn: () => fetchPostById(id, supabase),
         //staleTime: 5000,
     })
 
     const { data: comments, isLoading: commentsLoading, error: commentsError } = useQuery({
-        queryKey: ['comments', id],
+        queryKey: ['comments', { postId: id }],
         queryFn: () => fetchComments(id, supabase),
     })
 
@@ -52,22 +52,34 @@ const DetailedPost = () => {
     })
 
 
+    const { mutate: createComment } = useMutation({
+
+        mutationFn: () => insertComment({ comment, post_id: id, parent_id: replayToId }, supabase),
+        onSuccess: () => {
+            setComment('');
+            setReplayToId(null);
+            queryClient.invalidateQueries({ queryKey: ['comments', { postId: id }] });
+            queryClient.invalidateQueries({ queryKey: ['comments', { parentId: replayToId }] });
+            inputRef.current?.blur();
+            //router.back()
+        },
+        onError: (error) => {
+            Alert.alert('Error', error.message)
+        }
+    })
+
+
 
 
     const searchedPost = posts.find(p => p.id === id);
 
 
-
-
-
-
-
     const handleReplyButtonPressed = useCallback((commentId: string) => {
-   
-       // console.log("Reply button pressed", comment);
-      inputRef.current?.focus();
-        //setComment(`@${commentId} `);
-    },[])
+
+        console.log("Reply button pressed", comment);
+        setReplayToId(commentId);
+        inputRef.current?.focus();
+    }, [])
 
     if (isLoading) {
         return <ActivityIndicator />
@@ -148,7 +160,7 @@ const DetailedPost = () => {
                     />
                     {isInputFocused && (
 
-                        <Pressable style={{ backgroundColor: '#0d469b', borderRadius: 15, padding: 5, marginLeft: 'auto', marginTop: 15, }}>
+                        <Pressable onPress={() => createComment()} style={{ backgroundColor: '#0d469b', borderRadius: 15, padding: 5, marginLeft: 'auto', marginTop: 15, }}>
                             <Text style={{ color: 'white', paddingVertical: 5, paddingHorizontal: 10, fontWeight: 'bold', fontSize: 13 }}>Reply</Text>
                         </Pressable>
                     )}
